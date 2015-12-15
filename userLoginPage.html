@@ -1,0 +1,192 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+
+
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+
+
+<head>
+
+  <title>Salesforce Lightning Design System Trailhead Module</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+  <apex:stylesheet value="{!URLFOR($Resource.SLDS090, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+
+</head>
+
+
+<body>
+
+
+
+  <!-- REQUIRED SLDS WRAPPER -->
+
+  <div class="slds">
+
+<!-- MASTHEAD -->
+
+          <p class="slds-text-heading--small slds-m-bottom--small">Programming Assignment </p>
+
+          <!-- / MASTHEAD -->
+
+
+
+      <!-- PAGE HEADER -->
+      <div class="slds-page-header" role="banner">
+
+            <!-- LAYOUT GRID -->
+            <div class="slds-grid">
+
+              <!-- GRID COL -->
+                  <div class="slds-col">
+
+                    <!-- HEADING AREA -->
+                        <h1 class="slds-text-heading--medium">Cloud Lending Borrower Portal</h1>
+                    <!-- /HEADING AREA -->
+
+                  </div>
+             <!-- / GRID COL -->
+
+          </div>
+          <!-- / LAYOUT GRID -->
+      </div>
+      <!-- / PAGE HEADER -->
+
+
+
+<!-- PRIMARY CONTENT WRAPPER -->
+<div class="myapp">
+
+  <!-- LOGIN -->
+  <div aria-labelledby="loginform">
+
+    <!-- BOXED AREA -->
+    <fieldset class="slds-box slds-theme--default slds-container--small">
+
+      <legend id="login" class="slds-text-heading--medium slds-p-vertical--medium">Login</legend>
+
+      <!-- LOGIN FORM -->
+      <form class="slds-form--stacked">
+
+        <div class="slds-form-element">
+          <label class="slds-form-element__label" for="userName">User Name</label>
+          <div class="slds-form-element__control">
+            <input id="userName" class="slds-input" type="text" placeholder="USER NAME"/>
+          </div>
+
+          <label class="slds-form-element__label" for="password">Password</label>
+          <div class="slds-form-element__control">
+            <input id="password" class="slds-input" type="password" placeholder="PASSWORD"/>
+          </div>
+        </div>
+        <button class="slds-button slds-button--brand slds-m-top--medium" type="button" onClick="login()">Login</button>
+        <label id="error_label" class="slds-form-element__label"></label>
+      </form>
+      <!-- LOGIN FORM -->
+
+    </fieldset>
+    <!-- / BOXED AREA -->
+
+  </div>
+  <!-- / LOGIN -->
+
+  <div class="myapp">
+
+  <!-- ACCOUNT LIST TABLE -->
+  <div id="accountList" class="slds-p-vertical--medium"></div>
+  <!-- / ACCOUNT LIST TABLE -->
+
+  </div>
+
+</div>
+<!-- / PRIMARY CONTENT WRAPPER -->
+
+
+   <!-- FOOTER -->
+<footer role="contentinfo" class="slds-p-around--large">
+  <!-- LAYOUT GRID -->
+  <div class="slds-grid slds-grid--align-spread">
+       <p class="slds-col">Used Salesforce Lightning </p>
+       <p class="slds-col">&copy; Shivateja(Shiv) Madipalli</p>
+  </div>
+  <!-- / LAYOUT GRID -->
+</footer>
+<!-- / FOOTER --> <!-- FOOTER -->
+
+    <!-- / FOOTER -->
+
+
+
+  </div>
+
+  <!-- / REQUIRED SLDS WRAPPER -->
+
+
+
+</body>
+
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+    function login(){
+    try {
+        console.log("Login Clicked");
+        var userName = $('#userName');
+        var passWord = $('#password');
+        console.log("username null value:"+userName.val()+"@#@#");
+        console.log("password null value:"+passWord.val()+"@#@#");
+        if((userName.val()) && (passWord.val())){
+            $('body').css('cursor', 'progress');
+            $.ajax({
+            url: 'xxxxxxx/clBorrower/'+userName.val()+'/'+passWord.val(),
+            type: 'GET',
+            success: function(data) {
+                if(data != null) {
+                        console.log("Data is not null");
+                    }
+                },
+            complete: function(data) {
+                console.log("data.status: "+data.status);
+                if(data.status == 200) {
+                    console.log("Complete fired");
+                    console.log("data in complete" + data);
+                    var cookie = ['loanData=', JSON.stringify(data), '; domain=.', window.location.host.toString(), '; path=/;'].join('');
+                    document.cookie = cookie;
+                    location.href="https://cloud-lending-test-dev-ed--c.na22.visual.force.com/apex/LoanDetails";
+                }
+                else {
+                    console.log("Username or Password is wrong");
+                    }
+                },
+            error : function() {
+                    window.alert("As a Developer I do hate these issues, an error :( please refresh the page");
+                },
+            });
+
+            }
+        else {
+           console.log("Username or Password is wrong this is outside");
+           $('#error_label').text("error with username or/and password");
+           $('#error_label').show();
+        }
+
+   }
+   catch(err) {
+       window.alert("As a Developer I do hate these issues, an error :( please refresh the page");
+   }
+   }
+
+
+</script>
+
+<!-- / JAVASCRIPT -->
+
+
+
+</html>
+
+</apex:page>

@@ -1,0 +1,320 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+
+
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+
+
+<head>
+
+  <title>Salesforce Lightning Design System Trailhead Module</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+  <apex:stylesheet value="{!URLFOR($Resource.SLDS090, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+
+</head>
+
+<body onload="pageLoad()">
+
+<!-- REQUIRED SLDS WRAPPER -->
+
+  <div class="slds">
+
+            <!-- MASTHEAD -->
+
+              <p class="slds-text-heading--small slds-m-bottom--small">Programming Assignment </p>
+
+           <!-- / MASTHEAD -->
+
+      <!-- PAGE HEADER -->
+      <div class="slds-page-header" role="banner">
+
+            <!-- LAYOUT GRID -->
+            <div class="slds-grid">
+
+              <!-- GRID COL -->
+                  <div class="slds-col">
+
+                    <!-- HEADING AREA -->
+                        <h1 class="slds-text-heading--medium">Cloud Lending Borrower Portal</h1>
+                    <!-- /HEADING AREA -->
+
+                  </div>
+             <!-- / GRID COL -->
+
+             <!-- GRID COL -->
+             <div class="slds-col slds-no-flex slds-align-middle">
+
+                <div class="slds-button-group" role="group">
+                    <button id="loanLogout" class="slds-button slds-button--neutral" onclick="logout()">
+                      Logout
+                    </button>
+               </div>
+
+            </div>
+            <!-- / GRID COL -->
+
+          </div>
+          <!-- / LAYOUT GRID -->
+      </div>
+      <!-- / PAGE HEADER -->
+
+      <!-- First Content Holder -->
+          <div id="userData" class="slds-p-vertical--medium"></div>
+      <!-- / First Content Holder -->
+
+      <!-- Second Content Holder -->
+          <div id="loanList" class="slds-p-vertical--medium"></div>
+      <!-- / Second Content Holder -->
+
+      <!-- FOOTER -->
+        <footer role="contentinfo" class="slds-p-around--large">
+          <!-- LAYOUT GRID -->
+              <div class="slds-grid slds-grid--align-spread">
+                <p class="slds-col">Used Salesforce Lightning </p>
+                <p class="slds-col">&copy; Shivateja(Shiv) Madipalli</p>
+              </div>
+          <!-- / LAYOUT GRID -->
+        </footer>
+    <!-- / FOOTER -->
+
+</div>
+<!-- / REQUIRED SLDS WRAPPER -->
+
+
+</body>
+
+<script>
+    function read_cookie(name) {
+
+        var result = document.cookie.match(new RegExp(name + '=([^;]+)'));
+        result && (result = JSON.parse(result[1]));
+        console.log("cookie Data: " + result);
+        return result;
+      }
+
+
+    var loan_load_html;
+
+    function loadLoan(loanData) {
+
+        var loanDataDiv = $('#loanList');
+        console.log("loanDataDiv: "+ loanDataDiv);
+        var html = '<div id="dynamic_loanData_Div" class="slds-scrollable--x"><table class="slds-table slds-table--bordered">';
+
+          html += '<thead>';
+          html += '<tr>';
+          html += '<th scope="col">Loan name</th>';
+          html += '<th scope="col">Purpose</th>';
+          html += '<th scope="col">Status</th>';
+          html += '</tr>';
+          html += '</thead>';
+          html += '<tbody>';
+
+          for(var i=0;i<loanData.length;i++) {
+              html += '<tr><td><a onclick= "return loanNumberClick(this.id)" id="'+loanData[i].loan_id+'" style="cursor: pointer">' + loanData[i].loanName + '</a></td>';
+              html += '<td>' + loanData[i].purpose + '</td>';
+              html += '<td>' + loanData[i].status + '</td></tr>';
+          }
+
+          html = html + '<tbody></table></div>';
+       console.log("html data: "+html);
+       loan_load_html = html;
+       $('#loanList').html(html);
+       }
+
+
+    function pageLoad() {
+
+        var inputData = read_cookie('loanData');
+        if(inputData != null) {
+        $('body').css('cursor', 'progress');
+            console.log("inputData response text: " + inputData.responseText);
+            var responseTextJson = JSON.parse(inputData.responseText);
+            console.log("inputData response text: " + responseTextJson.loanDetails);
+            var loanDetailsObj = responseTextJson.loanDetails;
+            var userDetailsObj = responseTextJson.userProfile;
+            loadUserProfile(userDetailsObj);
+            loadLoan(loanDetailsObj);
+        $('body').css('cursor', 'auto');
+        }
+        else {
+            location.href="https://cloud-lending-test-dev-ed--c.na22.visual.force.com/apex/userLoginPage";
+        }
+    }
+
+
+    function loadUserProfile(userData) {
+
+        var userDataDiv = $('#userData');
+        console.log("userDataDiv: "+ userDataDiv);
+        var html = '<div class="slds-scrollable--x">';
+        html += '<label class="slds-text-heading--small"> Welcome! </label>';
+        html += '<label class="slds-text-heading--large"> '+ userData.displayname+'</label>';
+        html += '<br>';
+        html += '<label class="slds-text-heading--small"> '+ userData.username+' | </label>';
+        html += '<label class="slds-text-heading--small"> '+ userData.email+'</label>';
+        html +=  '</div>';
+        console.log("html data: "+html);
+       $('#userData').html(html);
+       }
+
+    function logout() {
+
+        console.log("logout click logged");
+        document.cookie = ['loanData', '=; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/; domain=.', window.location.host.toString()].join('');
+        location.href="https://cloud-lending-test-dev-ed--c.na22.visual.force.com/apex/userLoginPage";
+
+    }
+
+    function go_back_load_loan() {
+
+        $('#dynamic_Individual_loanData_Div').css("visibility","hidden");
+        $('#dynamic_loanData_Div').css("visibility","visible");
+        $('#loanList').html(loan_load_html);
+
+    }
+
+    function loanNumberClick(loanNumb) {
+    try {
+
+        console.log("loan Number id: "+loanNumb);
+        $('#dynamic_loanData_Div').css("visibility","hidden");
+        var loanDataDiv = $('#loanList');
+        console.log("loanDataDiv: "+ loanDataDiv);
+        if(loanNumb) {
+        $('body').css('cursor', 'progress');
+        $.ajax({
+            url: 'xxxxx/clBorrower/'+ loanNumb,
+            type: 'GET',
+            success: function(data) {
+                if(data != null) {
+                        console.log("Data is not null");
+                    }
+                },
+            complete: function(data) {
+                console.log("data.status: "+data.status);
+                if(data.status == 200) {
+                    console.log("Complete fired");
+                    console.log("data in complete" + JSON.stringify(data));
+                    create_Individual_Loan_Tables(data);
+                    $('body').css('cursor', 'auto');
+                }
+                else {
+                    console.log("Server did not respond with 200");
+                    }
+                },
+            error : function() {
+                console.log("Error at server");
+                window.alert("As a Developer I do hate these issues, an error :( please refresh the page");
+                },
+            });
+        }
+        }
+        catch(err) {
+            window.alert("As a Developer I do hate these issues, an error :( please refresh the page");
+        }
+    }
+
+    var Indi_loan_data;
+
+    function create_Individual_Loan_Tables(Indi_loan) {
+
+        Indi_loan_data = Indi_loan;
+        var html = '<div id="dynamic_Individual_loanData_Div" class="slds-scrollable--x">';
+        html += '<button type="button" class="slds-button slds-button--neutral" onclick="go_back_load_loan()" >Go Back!</button>';
+        html += '<br>';
+        html += '<br>';
+        html += '<ol data-role="listview">';
+
+        for(var dataVal in Indi_loan.responseJSON.result[0]) {
+
+
+
+
+        var separators = ['_','__'];
+        var splitString = dataVal.split(new RegExp(separators.join('|'), 'g'));
+
+        var keyVal = '';
+          if(splitString[0] == "loan") {
+
+          for(var i=1;i<splitString.length-1;i++) {
+          //console.log("splitString[i]" + splitString[i]);
+            if(splitString[i] != '') {
+              keyVal += " " + splitString[i];
+              }
+          }
+
+          }
+          else {
+              keyVal = dataVal;
+          }
+
+            html += '<li><a onclick= "return jsonListClick(this.id)" id="' + dataVal + '" style="cursor: pointer;font-weight: 900">' + keyVal + '</a></li>';
+            html += '<li><div id="dynamic_' + dataVal + '" style="margin-left: 2cm;display:none" class="slds-scrollable--x"></div></li>';
+            html += '<br>';
+        }
+        html += '</ol>';
+        html = html + '</div>';
+        console.log("html data: "+html);
+        $('#loanList').html(html);
+        for(var data1 in Indi_loan.responseJSON.result[0]) {
+            $('#'+ data1).data('key',Indi_loan.responseJSON.result[0][data1]);
+        }
+     }
+
+
+    function jsonListClick(idVal) {
+
+
+        console.log('Clicked: ' + idVal);
+        console.log('test test test: ' + JSON.stringify($('#' + idVal).data('key')));
+        var dynamic_data_stored_in_Jquery_Obj = $('#' + idVal).data('key');
+
+
+        var html = '<div id="dynamic_loanData_Element"' +idVal+ '_Div" class="slds-scrollable--x">';
+
+
+
+
+
+
+        for(var i=0;i< dynamic_data_stored_in_Jquery_Obj.length;i++) {
+        html += '<table class="slds-table slds-table--bordered"><tbody>';
+            for(var dataVal in dynamic_data_stored_in_Jquery_Obj[i]) {
+                html += '<tr>';
+                html += '<td>' + dataVal + '</td>';
+                html += '<td>' + dynamic_data_stored_in_Jquery_Obj[i][dataVal] + '</td>';
+                html += '</tr>';
+            }
+        html += '</tbody></table>';
+        html += '<br>';
+        html += '<br>';
+        }
+
+
+        html = html + '</div>';
+        console.log("html data: "+html);
+        hide_n_show(idVal);
+        $('#dynamic_' + idVal).html(html);
+
+    }
+
+    function hide_n_show(element) {
+
+        if($('#dynamic_' + element).is( ":hidden" )) {
+            $('#dynamic_' + element).css("display","block");
+            $('#dynamic_' + element).show("slow");
+        }
+        else {
+            $('#dynamic_' + element).hide("slow");
+        }
+
+    }
+
+</script>
+
+</html>
+
+</apex:page>

@@ -1,0 +1,22 @@
+{
+  "name": "clsalesforceapp",
+  "version": "1.0.0",
+  "description": "Web interface for borrowers using Salesforce CloudLending Loan API ",
+  "main": "mainserver.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "shivateja-madipalli",
+  "license": "ISC",
+  "dependencies": {
+    "@salesforce-ux/design-system": "^0.12.0",
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "node-rest-client": "^1.5.1",
+    "request": "^2.67.0",
+    "restify": "^4.0.3"
+  },
+  "engines": {
+    "node": "4.2.2"
+  }
+}
